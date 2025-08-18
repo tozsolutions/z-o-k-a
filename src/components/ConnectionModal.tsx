@@ -1,0 +1,155 @@
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Wifi, Bluetooth, Server, Copy, Check } from "lucide-react";
+import { GameCard } from "./GameCard";
+
+interface ConnectionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConnect: (method: string, code?: string) => void;
+  isHost?: boolean;
+}
+
+export function ConnectionModal({ isOpen, onClose, onConnect, isHost = false }: ConnectionModalProps) {
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [connectionCode, setConnectionCode] = useState("");
+  const [showCode, setShowCode] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const connectionMethods = [
+    {
+      id: "wifi",
+      title: "WiFi Ağı",
+      description: "Aynı WiFi ağındaki cihazlar",
+      icon: Wifi,
+      color: "text-chapter-1"
+    },
+    {
+      id: "bluetooth", 
+      title: "Bluetooth",
+      description: "Yakındaki cihazlarla doğrudan bağlantı",
+      icon: Bluetooth,
+      color: "text-chapter-2"
+    },
+    {
+      id: "hotspot",
+      title: "Yerel Sunucu",
+      description: "Host cihaz sunucu oluşturur",
+      icon: Server,
+      color: "text-chapter-3"
+    }
+  ];
+
+  const handleMethodSelect = (method: string) => {
+    setSelectedMethod(method);
+    if (isHost && method === "hotspot") {
+      // Generate connection code for host
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      setConnectionCode(code);
+      setShowCode(true);
+    }
+  };
+
+  const handleConnect = () => {
+    onConnect(selectedMethod, connectionCode);
+  };
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(connectionCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-card border-border max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-foreground text-center text-xl">
+            {isHost ? "Bağlantı Kurulumu" : "Oyuna Katıl"}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          {!showCode ? (
+            <>
+              <div className="space-y-3">
+                {connectionMethods.map((method) => {
+                  const Icon = method.icon;
+                  return (
+                    <GameCard
+                      key={method.id}
+                      variant={selectedMethod === method.id ? "glow" : "default"}
+                      className="cursor-pointer"
+                      onClick={() => handleMethodSelect(method.id)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className={`${method.color} w-6 h-6`} />
+                        <div>
+                          <h4 className="font-semibold text-foreground">{method.title}</h4>
+                          <p className="text-sm text-muted-foreground">{method.description}</p>
+                        </div>
+                      </div>
+                    </GameCard>
+                  );
+                })}
+              </div>
+
+              {selectedMethod && !isHost && (
+                <div className="space-y-2">
+                  <Label htmlFor="code" className="text-foreground">Bağlantı Kodu</Label>
+                  <Input
+                    id="code"
+                    placeholder="Bağlantı kodunu girin"
+                    value={connectionCode}
+                    onChange={(e) => setConnectionCode(e.target.value)}
+                    className="bg-input border-border text-foreground"
+                  />
+                </div>
+              )}
+
+              <Button 
+                variant="hero" 
+                className="w-full" 
+                disabled={!selectedMethod || (!isHost && !connectionCode)}
+                onClick={handleConnect}
+              >
+                {isHost ? "Sunucu Başlat" : "Bağlan"}
+              </Button>
+            </>
+          ) : (
+            <div className="text-center space-y-4">
+              <GameCard variant="glow">
+                <div className="space-y-3">
+                  <h4 className="text-lg font-bold text-foreground">Bağlantı Kodunuz</h4>
+                  <div className="text-3xl font-mono font-bold text-primary tracking-wider">
+                    {connectionCode}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={copyCode}
+                    className="w-full"
+                  >
+                    {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                    {copied ? "Kopyalandı!" : "Kodu Kopyala"}
+                  </Button>
+                </div>
+              </GameCard>
+              
+              <p className="text-muted-foreground text-sm">
+                Diğer oyuncular bu kodu kullanarak oyuna katılabilir
+              </p>
+              
+              <Button variant="hero" className="w-full" onClick={handleConnect}>
+                Oyuncuları Bekle
+              </Button>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
