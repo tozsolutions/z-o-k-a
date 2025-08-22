@@ -1,9 +1,11 @@
+
 import { useState } from "react";
 import { ZokaLogo } from "@/components/ZokaLogo";
 import { GameCard } from "@/components/GameCard";
 import { Button } from "@/components/ui/button";
 import { ConnectionModal } from "@/components/ConnectionModal";
-import { Users, Heart } from "lucide-react";
+import { Users, Heart, Bot } from "lucide-react";
+import { useGame } from "@/contexts/GameContext";
 
 interface GameSetupProps {
   onGameStart: (mode: '2-player' | '4-player') => void;
@@ -12,16 +14,22 @@ interface GameSetupProps {
 export function GameSetup({ onGameStart }: GameSetupProps) {
   const [selectedMode, setSelectedMode] = useState<'2-player' | '4-player' | null>(null);
   const [showConnection, setShowConnection] = useState(false);
+  const { startGame } = useGame();
 
   const handleModeSelect = (mode: '2-player' | '4-player') => {
     setSelectedMode(mode);
     setShowConnection(true);
   };
 
+  const handleDemoStart = (mode: '2-player' | '4-player') => {
+    startGame(mode, 'demo', true);
+    onGameStart(mode);
+  };
+
   const handleConnection = (method: string, code?: string) => {
-    // Here you would implement the actual connection logic
-    setShowConnection(false);
     if (selectedMode) {
+      startGame(selectedMode, method, false);
+      setShowConnection(false);
       onGameStart(selectedMode);
     }
   };
@@ -79,6 +87,46 @@ export function GameSetup({ onGameStart }: GameSetupProps) {
               <div className="text-2xl font-bold text-secondary">4</div>
             </div>
           </GameCard>
+
+          {/* Demo Mode Section */}
+          <div className="border-t border-border pt-6">
+            <h3 className="text-lg font-semibold text-center text-foreground mb-4">
+              Demo Modu
+            </h3>
+            <div className="space-y-3">
+              <GameCard 
+                variant="glow" 
+                className="cursor-pointer hover:scale-105 transition-all duration-300"
+                onClick={() => handleDemoStart('2-player')}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-accent rounded-lg">
+                    <Bot className="w-6 h-6 text-accent-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-foreground">2 Oyuncu Demo</h4>
+                    <p className="text-sm text-muted-foreground">Bot ile test et</p>
+                  </div>
+                </div>
+              </GameCard>
+
+              <GameCard 
+                variant="glow" 
+                className="cursor-pointer hover:scale-105 transition-all duration-300"
+                onClick={() => handleDemoStart('4-player')}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-accent rounded-lg">
+                    <Bot className="w-6 h-6 text-accent-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-foreground">4 Oyuncu Demo</h4>
+                    <p className="text-sm text-muted-foreground">Botlar ile test et</p>
+                  </div>
+                </div>
+              </GameCard>
+            </div>
+          </div>
 
           <div className="text-center">
             <Button variant="link" className="text-muted-foreground">

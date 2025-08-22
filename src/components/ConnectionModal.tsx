@@ -1,9 +1,10 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Wifi, Bluetooth, Server, Copy, Check } from "lucide-react";
+import { Wifi, Bluetooth, Server, Copy, Check, Loader2 } from "lucide-react";
 import { GameCard } from "./GameCard";
 
 interface ConnectionModalProps {
@@ -18,6 +19,8 @@ export function ConnectionModal({ isOpen, onClose, onConnect, isHost = false }: 
   const [connectionCode, setConnectionCode] = useState("");
   const [showCode, setShowCode] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<string>("");
 
   const connectionMethods = [
     {
@@ -46,7 +49,6 @@ export function ConnectionModal({ isOpen, onClose, onConnect, isHost = false }: 
   const handleMethodSelect = (method: string) => {
     setSelectedMethod(method);
     if (isHost && method === "hotspot") {
-      // Generate connection code for host
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       setConnectionCode(code);
       setShowCode(true);
@@ -54,7 +56,22 @@ export function ConnectionModal({ isOpen, onClose, onConnect, isHost = false }: 
   };
 
   const handleConnect = () => {
-    onConnect(selectedMethod, connectionCode);
+    setIsConnecting(true);
+    setConnectionStatus("Bağlantı kuruluyor...");
+    
+    // Gerçekçi bağlantı simülasyonu
+    setTimeout(() => {
+      setConnectionStatus("Oyuncular aranıyor...");
+    }, 1000);
+
+    setTimeout(() => {
+      setConnectionStatus("Bağlantı başarılı!");
+      setTimeout(() => {
+        onConnect(selectedMethod, connectionCode);
+        setIsConnecting(false);
+        setConnectionStatus("");
+      }, 1000);
+    }, 3000);
   };
 
   const copyCode = () => {
@@ -73,7 +90,24 @@ export function ConnectionModal({ isOpen, onClose, onConnect, isHost = false }: 
         </DialogHeader>
 
         <div className="space-y-4">
-          {!showCode ? (
+          {isConnecting ? (
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+              <p className="text-foreground font-medium">{connectionStatus}</p>
+              <div className="space-y-2">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '60%' }} />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {selectedMethod === 'wifi' && 'WiFi ağında cihazlar aranıyor...'}
+                  {selectedMethod === 'bluetooth' && 'Bluetooth cihazları taranıyor...'}
+                  {selectedMethod === 'hotspot' && 'Yerel sunucu başlatılıyor...'}
+                </p>
+              </div>
+            </div>
+          ) : !showCode ? (
             <>
               <div className="space-y-3">
                 {connectionMethods.map((method) => {

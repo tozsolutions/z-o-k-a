@@ -4,6 +4,7 @@ import { ChapterCard } from "@/components/ChapterCard";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Settings } from "lucide-react";
 import { Chapter } from "@/types/game";
+import { useGame } from "@/contexts/GameContext";
 
 interface ChapterSelectionProps {
   gameMode: '2-player' | '4-player';
@@ -12,6 +13,8 @@ interface ChapterSelectionProps {
 }
 
 export function ChapterSelection({ gameMode, onBack, onChapterSelect }: ChapterSelectionProps) {
+  const { gameSession, isDemo } = useGame();
+  
   const chapters: Chapter[] = [
     {
       id: 1,
@@ -73,13 +76,22 @@ export function ChapterSelection({ gameMode, onBack, onChapterSelect }: ChapterS
 
       {/* Game Mode Info */}
       <div className="p-6 border-b border-border bg-card/50">
-        <div className="text-center">
+        <div className="text-center space-y-2">
           <h2 className="text-xl font-bold text-foreground">
             {gameMode === '2-player' ? '1 Çift Modu' : '2 Çift Modu'}
+            {isDemo && <span className="text-sm text-accent ml-2">(Demo)</span>}
           </h2>
-          <p className="text-muted-foreground">
-            {gameMode === '2-player' ? '2 Oyuncu Bağlı' : '4 Oyuncu Bağlı'}
-          </p>
+          <div className="flex justify-center gap-4">
+            {gameSession?.players.map((player, index) => (
+              <div key={player.id} className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${player.connected ? 'bg-green-500' : 'bg-red-500'}`} />
+                <span className="text-sm text-muted-foreground">
+                  {player.name}
+                  {isDemo && player.id.startsWith('bot') && ' (Bot)'}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
