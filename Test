@@ -1,0 +1,8 @@
+git clone <https://github.com/tozsolutions/z-o-k-a>
+
+# Step 2: Navigate to the project directory.
+cd <https://lovable.dev/projects/f8ffcd25-16ec-48d8-9e34-0ae15c7c8b07>
+
+npm i
+
+npm run dev
