@@ -3,12 +3,14 @@ import { ZokaLogo } from "@/components/ZokaLogo";
 import { Button } from "@/components/ui/button";
 import { GameSetup } from "./GameSetup";
 import { ChapterSelection } from "./ChapterSelection";
+import { GamePlaying } from "./GamePlaying";
 
 type GameState = 'landing' | 'setup' | 'chapters' | 'playing';
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>('landing');
   const [gameMode, setGameMode] = useState<'2-player' | '4-player'>('2-player');
+  const [currentChapter, setCurrentChapter] = useState<number>(1);
 
   const handleGameStart = (mode: '2-player' | '4-player') => {
     setGameMode(mode);
@@ -16,8 +18,16 @@ const Index = () => {
   };
 
   const handleChapterSelect = (chapterNumber: number) => {
-    // TODO: Navigate to game playing screen
-    console.log('Starting chapter:', chapterNumber);
+    setCurrentChapter(chapterNumber);
+    setGameState('playing');
+  };
+
+  const handleBackToChapters = () => {
+    setGameState('chapters');
+  };
+
+  const handleQuitToLanding = () => {
+    setGameState('landing');
   };
 
   if (gameState === 'setup') {
@@ -30,6 +40,16 @@ const Index = () => {
         gameMode={gameMode}
         onBack={() => setGameState('setup')}
         onChapterSelect={handleChapterSelect}
+      />
+    );
+  }
+
+  if (gameState === 'playing') {
+    return (
+      <GamePlaying 
+        chapterNumber={currentChapter}
+        onBack={handleBackToChapters}
+        onQuit={handleQuitToLanding}
       />
     );
   }

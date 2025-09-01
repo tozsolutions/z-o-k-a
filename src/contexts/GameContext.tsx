@@ -29,19 +29,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
       connected: true
     };
 
-    let players = [hostPlayer];
+    const players = [hostPlayer];
+
+    let finalPlayers = [...players];
 
     if (isDemoMode) {
       // Demo modunda bot oyuncular ekle
       if (mode === '2-player') {
-        players.push({
-          id: 'bot1',
-          name: 'Partner',
-          isHost: false,
-          connected: true
-        });
+        finalPlayers = [
+          ...finalPlayers,
+          {
+            id: 'bot1',
+            name: 'Partner',
+            isHost: false,
+            connected: true
+          }
+        ];
       } else {
-        players.push(
+        finalPlayers = [
+          ...finalPlayers,
           {
             id: 'bot1',
             name: 'Partner',
@@ -60,16 +66,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
             isHost: false,
             connected: true
           }
-        );
+        ];
       }
     }
 
     const session: GameSession = {
       id: Math.random().toString(36).substring(7),
-      players,
+      players: finalPlayers,
       currentChapter: 0,
       gameMode: mode,
-      connectionMethod: connectionMethod as any,
+      connectionMethod: connectionMethod as 'wifi' | 'bluetooth' | 'hotspot',
       isActive: true
     };
 
