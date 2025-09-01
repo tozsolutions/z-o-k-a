@@ -1,25 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zoka - En İyi Çiftler Oyunu</title>
+    <title>Z-O-K-A - En İyi Çiftler Oyunu</title>
     <meta name="description" content="Partnerinizle unutulmaz anlar yaşayın. 2-4 oyuncu için tasarlanmış en eğlenceli ve intim çiftler oyunu." />
-    <meta name="author" content="Zoka" />
-    <meta name="keywords" content="çiftler oyunu, intimlik, eğlence, oyun, çift aktivitesi, romantik oyun" />
+    <meta name="author" content="Zoka Team" />
+    <meta name="keywords" content="çiftler oyunu, intimlik, eğlence, oyun, çift aktivitesi, romantik oyun, doğruluk cesaret" />
 
-    <meta property="og:title" content="Zoka - En İyi Çiftler Oyunu" />
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Z-O-K-A" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="apple-touch-icon" href="/icon-192x192.png" />
+
+    <!-- Social Media Meta Tags -->
+    <meta property="og:title" content="Z-O-K-A - En İyi Çiftler Oyunu" />
     <meta property="og:description" content="Partnerinizle unutulmaz anlar yaşayın. 2-4 oyuncu için tasarlanmış en eğlenceli ve intim çiftler oyunu." />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:url" content="/" />
+    <meta property="og:site_name" content="Z-O-K-A" />
+    <meta property="og:locale" content="tr_TR" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:title" content="Z-O-K-A - En İyi Çiftler Oyunu" />
+    <meta name="twitter:description" content="Partnerinizle unutulmaz anlar yaşayın. En eğlenceli çiftler oyunu." />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;" />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

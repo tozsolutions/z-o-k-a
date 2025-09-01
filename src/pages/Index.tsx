@@ -3,12 +3,16 @@ import { ZokaLogo } from "@/components/ZokaLogo";
 import { Button } from "@/components/ui/button";
 import { GameSetup } from "./GameSetup";
 import { ChapterSelection } from "./ChapterSelection";
+import { GamePlaying } from "./GamePlaying";
+import { Settings } from "./Settings";
+import { HowToPlay } from "./HowToPlay";
 
-type GameState = 'landing' | 'setup' | 'chapters' | 'playing';
+type GameState = 'landing' | 'setup' | 'chapters' | 'playing' | 'settings' | 'howtoplay';
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>('landing');
   const [gameMode, setGameMode] = useState<'2-player' | '4-player'>('2-player');
+  const [currentChapter, setCurrentChapter] = useState<number>(1);
 
   const handleGameStart = (mode: '2-player' | '4-player') => {
     setGameMode(mode);
@@ -16,8 +20,12 @@ const Index = () => {
   };
 
   const handleChapterSelect = (chapterNumber: number) => {
-    // TODO: Navigate to game playing screen
-    console.log('Starting chapter:', chapterNumber);
+    setCurrentChapter(chapterNumber);
+    setGameState('playing');
+  };
+
+  const handleGameComplete = () => {
+    setGameState('chapters');
   };
 
   if (gameState === 'setup') {
@@ -32,6 +40,24 @@ const Index = () => {
         onChapterSelect={handleChapterSelect}
       />
     );
+  }
+
+  if (gameState === 'playing') {
+    return (
+      <GamePlaying
+        chapter={currentChapter}
+        onBack={() => setGameState('chapters')}
+        onComplete={handleGameComplete}
+      />
+    );
+  }
+
+  if (gameState === 'settings') {
+    return <Settings onBack={() => setGameState('landing')} />;
+  }
+
+  if (gameState === 'howtoplay') {
+    return <HowToPlay onBack={() => setGameState('landing')} />;
   }
 
   // Landing Page
@@ -67,10 +93,18 @@ const Index = () => {
           </Button>
           
           <div className="flex gap-4 justify-center">
-            <Button variant="outline" size="lg">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => setGameState('howtoplay')}
+            >
               Nasıl Oynanır?
             </Button>
-            <Button variant="ghost" size="lg">
+            <Button 
+              variant="ghost" 
+              size="lg"
+              onClick={() => setGameState('settings')}
+            >
               Ayarlar
             </Button>
           </div>
