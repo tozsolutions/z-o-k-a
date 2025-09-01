@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { getRandomQuestion } from "@/data/questions";
 import { Question } from "@/types/game";
@@ -50,7 +50,7 @@ export function GamePlaying({ chapter, onBack, onComplete }: GamePlayingProps) {
   useEffect(() => {
     if (!gameSession) return;
     loadNextQuestion();
-  }, [gameSession]);
+  }, [gameSession, loadNextQuestion]);
 
   useEffect(() => {
     if (timeLeft === null) return;
@@ -66,7 +66,7 @@ export function GamePlaying({ chapter, onBack, onComplete }: GamePlayingProps) {
     }
   }, [timeLeft]);
 
-  const loadNextQuestion = () => {
+  const loadNextQuestion = useCallback(() => {
     if (!gameSession) return;
     
     const question = getRandomQuestion(chapter, gameSession.gameMode);
@@ -92,7 +92,7 @@ export function GamePlaying({ chapter, onBack, onComplete }: GamePlayingProps) {
       // No more questions or all used
       setIsCompleted(true);
     }
-  };
+  }, [gameSession, chapter, usedQuestions]);
 
   const handleNext = () => {
     if (questionNumber >= maxQuestions) {
