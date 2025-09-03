@@ -42,7 +42,8 @@ export const GamePlaying = ({ chapterNumber, onBack, onQuit }: GamePlayingProps)
     setIsLoading(true);
     
     // Add current question to used questions
-    setUsedQuestions(prev => new Set([...prev, currentQuestion.id]));
+    const newUsedQuestions = new Set([...usedQuestions, currentQuestion.id]);
+    setUsedQuestions(newUsedQuestions);
     setQuestionCount(prev => prev + 1);
     
     // Move to next player
@@ -50,18 +51,16 @@ export const GamePlaying = ({ chapterNumber, onBack, onQuit }: GamePlayingProps)
       setCurrentPlayerIndex(prev => (prev + 1) % gameSession.players.length);
     }
 
-    setTimeout(() => {
-      // Get next question
-      const newAvailableQuestions = questions.filter(q => !usedQuestions.has(q.id) && q.id !== currentQuestion.id);
-      if (newAvailableQuestions.length > 0) {
-        const nextQuestion = getRandomQuestion(newAvailableQuestions);
-        setCurrentQuestion(nextQuestion);
-      } else {
-        // No more questions available
-        setCurrentQuestion(null);
-      }
-      setIsLoading(false);
-    }, 300);
+    // Get next question immediately
+    const newAvailableQuestions = questions.filter(q => !newUsedQuestions.has(q.id));
+    if (newAvailableQuestions.length > 0) {
+      const nextQuestion = getRandomQuestion(newAvailableQuestions);
+      setCurrentQuestion(nextQuestion);
+    } else {
+      // No more questions available
+      setCurrentQuestion(null);
+    }
+    setIsLoading(false);
   };
 
   const handleSkipQuestion = () => {
@@ -72,12 +71,10 @@ export const GamePlaying = ({ chapterNumber, onBack, onQuit }: GamePlayingProps)
 
     setIsLoading(true);
     
-    setTimeout(() => {
-      const filteredQuestions = availableQuestions.filter(q => q.id !== currentQuestion?.id);
-      const nextQuestion = getRandomQuestion(filteredQuestions);
-      setCurrentQuestion(nextQuestion);
-      setIsLoading(false);
-    }, 300);
+    const filteredQuestions = availableQuestions.filter(q => q.id !== currentQuestion?.id);
+    const nextQuestion = getRandomQuestion(filteredQuestions);
+    setCurrentQuestion(nextQuestion);
+    setIsLoading(false);
   };
 
   const handleRestartChapter = () => {

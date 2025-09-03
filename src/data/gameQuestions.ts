@@ -222,7 +222,10 @@ export const getQuestionsByChapter = (chapterNumber: number, gameMode: '2-player
 
 export const getRandomQuestion = (questions: Question[]): Question | null => {
   if (questions.length === 0) return null;
-  return questions[Math.floor(Math.random() * questions.length)];
+  
+  // Shuffle the array to ensure better randomization
+  const shuffled = [...questions].sort(() => Math.random() - 0.5);
+  return shuffled[Math.floor(Math.random() * shuffled.length)];
 };
 
 export const getChapterById = (id: number): Chapter | undefined => {
