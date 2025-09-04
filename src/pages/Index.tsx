@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { GameSetup } from "./GameSetup";
 import { ChapterSelection } from "./ChapterSelection";
 import { GamePlaying } from "./GamePlaying";
+import { WaitingRoom } from "./WaitingRoom";
 
-type GameState = 'landing' | 'setup' | 'chapters' | 'playing';
+type GameState = 'landing' | 'setup' | 'waiting' | 'chapters' | 'playing';
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>('landing');
@@ -14,6 +15,10 @@ const Index = () => {
 
   const handleGameStart = (mode: '2-player' | '4-player') => {
     setGameMode(mode);
+    setGameState('waiting');
+  };
+
+  const handleAllPlayersConnected = () => {
     setGameState('chapters');
   };
 
@@ -34,11 +39,21 @@ const Index = () => {
     return <GameSetup onGameStart={handleGameStart} />;
   }
 
+  if (gameState === 'waiting') {
+    return (
+      <WaitingRoom 
+        gameMode={gameMode}
+        onBack={() => setGameState('setup')}
+        onAllConnected={handleAllPlayersConnected}
+      />
+    );
+  }
+
   if (gameState === 'chapters') {
     return (
       <ChapterSelection 
         gameMode={gameMode}
-        onBack={() => setGameState('setup')}
+        onBack={() => setGameState('waiting')}
         onChapterSelect={handleChapterSelect}
       />
     );

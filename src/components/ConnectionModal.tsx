@@ -70,8 +70,9 @@ export function ConnectionModal({ isOpen, onClose, onConnect, isHost = false }: 
         onConnect(selectedMethod, connectionCode);
         setIsConnecting(false);
         setConnectionStatus("");
+        // Close modal and let WaitingRoom handle the rest
       }, 1000);
-    }, 3000);
+    }, 2000); // Reduced from 3000 to 2000
   };
 
   const copyCode = () => {
